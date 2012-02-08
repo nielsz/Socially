@@ -1,23 +1,18 @@
+var config = require('./config.js');
+
 var searchterm = process.argv[2];
 console.log(searchterm);
-
-var EMBEDLY_KEY = 'EMBEDLY_KEY';
 
 var embedly = require('embedly')
   , require_either = embedly.utils.require_either
   , util = require_either('util', 'utils')
   , Api = embedly.Api
-  , api = new Api({user_agent: 'Mozilla/5.0 (compatible; myapp/1.0; u@my.com)', key: EMBEDLY_KEY});
+  , api = new Api({user_agent: 'Mozilla/5.0 (compatible; myapp/1.0; u@my.com)', key: config.EMBEDLY_KEY});
 
 
 var twitter = require('ntwitter');
 
-var twit = new twitter({
-  consumer_key: 'consumer_key',
-  consumer_secret: 'consumer_secret',
-  access_token_key: 'access_token_key',
-  access_token_secret: 'access_token_secret'
-});
+var twit = new twitter(config.TWITTER_CONFIG);
 
 twit.stream('statuses/filter', {'track':searchterm}, function(stream) {
   stream.on('data', function (data) {
@@ -47,15 +42,7 @@ twit.stream('statuses/filter', {'track':searchterm}, function(stream) {
   });
 });
 
-var fsqconfig = {
-  "secrets" : {
-    "clientId" : "clientId",
-    "clientSecret" : "clientSecret",
-    "redirectUrl" : "redirectUrl"
-  }
-}
-
-var foursquare = require("node-foursquare")(fsqconfig);
+var foursquare = require("node-foursquare")(config.FOURSQUARE_CONFIG);
 
 var express = require("express");
 
