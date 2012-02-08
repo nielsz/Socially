@@ -6,7 +6,7 @@ To install any required modules, run:
     npm install .
 
 ## Getting Started
-Get app keys at Twitter and Foursquare and replace the placeholders in socially.js
+Get API keys for embed.ly, foursquare and twitter. Save these keys in config.js (and be sure not to commit your keys into the repo)
 
 To stream all tweets containing the word 'elfstedentocht', start the app with:
 
