@@ -42,7 +42,8 @@ twit.stream('statuses/filter', {'track':searchterm}, function(stream) {
   });
 });
 
-var foursquare = require("node-foursquare")(config.FOURSQUARE_CONFIG);
+
+//var foursquare = require("node-foursquare")(config.FOURSQUARE_CONFIG);
 
 var express = require("express");
 
@@ -78,6 +79,7 @@ app.configure('production', function(){
   app.use(express.errorHandler());
 });
 
+/*
 app.get('/login', function(req, res) {
   res.writeHead(303, { "location": foursquare.getAuthClientRedirectUrl() });
   res.end();
@@ -103,5 +105,5 @@ app.get('/callback', function (req, res) {
     }
   });
 });
-
+*/
 app.listen(1337);

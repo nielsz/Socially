@@ -13,6 +13,10 @@
 
     <!-- Le styles -->
     <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/site.css" rel="stylesheet">
+    <script type="text/javascript" src="../js/jqueryrotate.js"></script>
+    <script type="text/javascript" src="../js/site.js"></script>    
+    
     <style>
       body {
         padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
@@ -82,8 +86,7 @@
       <div class="row">
         <div id="messages" class="span3">
         </div>
-        <div class="span9">
-          <ul class="thumbnails" id="media"></ul>
+        <div class="span9" id="media">
         </div>
       </div>
     </div> <!-- /container -->
@@ -100,7 +103,7 @@
       $('<div class="well"><h4>' + data.user + '</h4><p>' + data.text + '</p>' + Date(data.created_at) + '</div>').prependTo('#messages');
     });
     socket.on('media', function(data){
-      $('<li><a href="#" class="thumbnail"><img src="' + data.thumbnail_url + '" alt=""></a></li>').prependTo('#media');
+    	placeRandom(data);
     });
     navigator.geolocation.getCurrentPosition(successCallback,
                                              errorCallback,
