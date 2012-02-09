@@ -30,7 +30,7 @@ twit.stream('statuses/filter', {'track':searchterm}, function(stream) {
         ).on('complete', function(objs) {
           for (var i in objs) {
             if(objs[i].thumbnail_url != null) {
-              io.sockets.emit('media', { 'thumbnail_url': objs[i].thumbnail_url } );
+              io.sockets.emit('media', { 'title': objs[i].title, 'thumbnail_url': objs[i].thumbnail_url } );
             }
           }
         }).on('error', function(e) {

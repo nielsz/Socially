@@ -26,6 +26,6 @@ var placeRandom = function(data) {
 			'-webkit-transform' : 'rotate('+ rotDegrees +'deg)',  // safari only
 			'transform' : 'rotate('+ rotDegrees +'deg)' }; // added in case CSS3 is standard
 
-		$('<div class="polaroid"><img src="' + data.thumbnail_url + '" alt="Me and my girl in Florance" /><p>My girl and me in Florance</p></div>').appendTo('#media').css(cssObj);	
+		$('<div class="polaroid"><img src="' + data.thumbnail_url + '" alt="' + data.title + '" /><p>' + data.title + '</p></div>').appendTo('#media').css(cssObj);	
 		
 	}
