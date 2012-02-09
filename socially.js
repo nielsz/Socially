@@ -26,11 +26,12 @@ twit.stream('statuses/filter', {'track':searchterm}, function(stream) {
         return;
       }
 
-      if(data.text.substring(0,4)=="RT @" && ignoreLameRetweets == true) {
+      if(ignoreLameRetweets == true && (data.text.substring(0,4)=="RT @" || data.text.substring(0,5)=="RT: @" || data.text.substring(0,2)=="\"@" )) {
+      	console.log("Ignoring " + data.text);
       	return;
       }
 
-      io.sockets.emit('tweet', { 'user': data.user.name, 'text': twittext.autoLink(twittext.htmlEscape(data.text)), 'created_at': data.created_at  } );
+      io.sockets.emit('message', { 'message_type': 'twitter', 'user': data.user.name, 'text': twittext.autoLink(twittext.htmlEscape(data.text)), 'created_at': data.created_at  } );
 
       var urls = data.entities.urls.map(function(x){return x.url});
       
@@ -68,7 +69,7 @@ io.sockets.on('connection', function(socket) {
   twit.search(searchterm, {'include_entities':true}, function(err, data) {
     var results = data.results.reverse();
     results.map(function(tweet) {
-      socket.emit('tweet', { 'user': tweet.from_user, 'text': twittext.autoLink(twittext.htmlEscape(tweet.text)), 'created_at': tweet.created_at } );
+      socket.emit('message', { 'message_type': 'twitter', 'user': tweet.from_user, 'text': twittext.autoLink(twittext.htmlEscape(tweet.text)), 'created_at': tweet.created_at } );
     });
   });
 });

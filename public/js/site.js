@@ -21,8 +21,12 @@ var placeRandom = function(data) {
 			var wih = window.innerHeight;	
 		}
 		
-		var posx = 200; // Math.random()*(wiw-400)
-		var posy = 80; //Math.random()*(wih-400)
+		//var posx = 200; // Math.random()*(wiw-400)
+		//var posy = 80; //Math.random()*(wih-400)
+		
+		var posx =Math.random()*(wiw-700);
+		var posy =Math.random()*(wih-500);
+		
 		
 		var cssObj = { 'left' : posx,
 			'top' : posy,
