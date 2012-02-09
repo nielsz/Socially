@@ -80,6 +80,27 @@ io.sockets.on('connection', function(socket) {
                                'user': tweet.from_user,
                                'text': twittext.autoLink(twittext.htmlEscape(tweet.text)),
                                'created_at': tweet.created_at } );
+
+      var urls = twittext.extractUrls(tweet.text);
+
+      if (urls.length > 0) {
+        api.oembed(
+          { urls: urls
+          , wmode: 'transparent'
+          , method: 'after'
+          }
+        ).on('complete', function(objs) {
+          for (var i in objs) {
+            if(objs[i].thumbnail_url != null) {
+              io.sockets.emit('media', { 'title': objs[i].title,
+                                         'thumbnail_url': objs[i].thumbnail_url } );
+            }
+          }
+        }).on('error', function(e) {
+          console.error(e);
+        }).start();
+      }
+
     });
   });
 });
