@@ -18,7 +18,7 @@ var twit = new twitter(config.TWITTER_CONFIG);
 twit.stream('statuses/filter', {'track':searchterm}, function(stream) {
   stream.on('data', function (data) {
     if(data.retweeted_status == null) {
-      console.log(data);
+
       io.sockets.emit('tweet', { 'user': data.user.name, 'text': twittext.autoLink(twittext.htmlEscape(data.text)), 'created_at': data.created_at  } );
 
       var urls = data.entities.urls.map(function(x){return x.url});
