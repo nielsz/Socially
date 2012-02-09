@@ -30,7 +30,6 @@ twit.stream('statuses/filter', {'track':searchterm}, function(stream) {
       	return;
       }
 
-      //console.log(data);
       io.sockets.emit('tweet', { 'user': data.user.name, 'text': twittext.autoLink(twittext.htmlEscape(data.text)), 'created_at': data.created_at  } );
 
       var urls = data.entities.urls.map(function(x){return x.url});
@@ -64,9 +63,10 @@ var app = express.createServer()
 
 io.sockets.on('connection', function(socket) {
   twit.search(searchterm, {'include_entities':true}, function(err, data) {
-    for(var i in data.results) {
-      socket.emit('tweet', { 'user': data.results[i].from_user, 'text': twittext.autoLink(twittext.htmlEscape(data.results[i].text)), 'created_at': data.results[i].created_at } );
-    }
+    var results = data.results.reverse();
+    results.map(function(tweet) {
+      socket.emit('tweet', { 'user': tweet.from_user, 'text': twittext.autoLink(twittext.htmlEscape(tweet.text)), 'created_at': tweet.created_at } );
+    });
   });
 });
 
