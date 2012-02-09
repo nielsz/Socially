@@ -99,7 +99,7 @@
     <script src="../js/bootstrap.min.js"></script>
     <script src="../js/jquery.prettydate.js"></script>
     <script>
-    setInterval(function(){ $('#messages .date').prettyDate( { isUTC: true, interval: null } ); }, 10000);
+    setInterval(function(){ $('#messages .date').prettyDate( { isUTC: true, interval: null } ); }, 1000);
 
     var socket = io.connect();
     socket.on('message', function(data){
