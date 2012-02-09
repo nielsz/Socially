@@ -11,13 +11,15 @@ var embedly = require('embedly')
 
 
 var twitter = require('ntwitter');
+var twittext = require('twitter-text')
 
 var twit = new twitter(config.TWITTER_CONFIG);
 
 twit.stream('statuses/filter', {'track':searchterm}, function(stream) {
   stream.on('data', function (data) {
     if(data.retweeted_status == null) {
-      io.sockets.emit('tweet', { 'user': data.user.name, 'text': data.text, 'created_at': data.created_at  } );
+      console.log(data);
+      io.sockets.emit('tweet', { 'user': data.user.name, 'text': twittext.autoLink(twittext.htmlEscape(data.text)), 'created_at': data.created_at  } );
 
       var urls = data.entities.urls.map(function(x){return x.url});
       
@@ -53,7 +55,7 @@ var app = express.createServer()
 io.sockets.on('connection', function(socket) {
   twit.search(searchterm, {'include_entities':true}, function(err, data) {
     for(var i in data.results) {
-      socket.emit('tweet', { 'user': data.results[i].from_user, 'text': data.results[i].text, 'created_at': data.results[i].created_at } );
+      socket.emit('tweet', { 'user': data.results[i].from_user, 'text': twittext.autoLink(twittext.htmlEscape(data.results[i].text)), 'created_at': data.results[i].created_at } );
     }
   });
 });

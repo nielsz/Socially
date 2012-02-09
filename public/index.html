@@ -97,11 +97,14 @@
     <script src="../socket.io/socket.io.js"></script>
     <script src="../js/jquery.min.js"></script>
     <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/jquery.prettydate.js"></script>
     <script>
+    setInterval(function(){ $('#messages .date').prettyDate( { isUTC: true, interval: null } ); }, 10000);
+
     var socket = io.connect();
     socket.on('tweet', function(data){
       var created_at = new Date(Date.parse(data.created_at));
-      $('<div class="well"><h4>' + data.user + '</h4><p>' + data.text + '</p>' + created_at.toLocaleDateString() + ' ' + created_at.toLocaleTimeString()  + '</div>').prependTo('#messages');
+      $('<div class="well"><h4>' + data.user + '</h4><p>' + data.text + '</p><span class="date" title="' + created_at.toISOString() + '">' + created_at.toLocaleDateString() + ' ' + created_at.toLocaleTimeString()  + '</span></div>').prependTo('#messages');
     });
     socket.on('media', function(data){
     	placeRandom(data);
