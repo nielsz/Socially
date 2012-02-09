@@ -26,12 +26,18 @@ twit.stream('statuses/filter', {'track':searchterm}, function(stream) {
         return;
       }
 
-      if(ignoreLameRetweets == true && (data.text.substring(0,4)=="RT @" || data.text.substring(0,5)=="RT: @" || data.text.substring(0,2)=="\"@" )) {
+      if(ignoreLameRetweets == true && (data.text.substring(0,4)=="RT @"
+                                     || data.text.substring(0,5)=="RT: @"
+                                     || data.text.substring(0,2)=="\"@" )) {
+
       	console.log("Ignoring " + data.text);
       	return;
       }
 
-      io.sockets.emit('message', { 'message_type': 'twitter', 'user': data.user.name, 'text': twittext.autoLink(twittext.htmlEscape(data.text)), 'created_at': data.created_at  } );
+      io.sockets.emit('message', { 'message_type': 'twitter',
+                                   'user': data.user.name,
+                                   'text': twittext.autoLink(twittext.htmlEscape(data.text)),
+                                   'created_at': data.created_at  } );
 
       var urls = data.entities.urls.map(function(x){return x.url});
       
@@ -44,7 +50,8 @@ twit.stream('statuses/filter', {'track':searchterm}, function(stream) {
         ).on('complete', function(objs) {
           for (var i in objs) {
             if(objs[i].thumbnail_url != null) {
-              io.sockets.emit('media', { 'title': objs[i].title, 'thumbnail_url': objs[i].thumbnail_url } );
+              io.sockets.emit('media', { 'title': objs[i].title,
+                                         'thumbnail_url': objs[i].thumbnail_url } );
             }
           }
         }).on('error', function(e) {
@@ -69,7 +76,10 @@ io.sockets.on('connection', function(socket) {
   twit.search(searchterm, {'include_entities':true}, function(err, data) {
     var results = data.results.reverse();
     results.map(function(tweet) {
-      socket.emit('message', { 'message_type': 'twitter', 'user': tweet.from_user, 'text': twittext.autoLink(twittext.htmlEscape(tweet.text)), 'created_at': tweet.created_at } );
+      socket.emit('message', { 'message_type': 'twitter',
+                               'user': tweet.from_user,
+                               'text': twittext.autoLink(twittext.htmlEscape(tweet.text)),
+                               'created_at': tweet.created_at } );
     });
   });
 });
