@@ -51,6 +51,9 @@ twit.stream('statuses/filter', {'track':searchterm}, function(stream) {
         }).start();
       }
   });
+  stream.on('error', function (error) {
+    console.log(error);
+  });
 });
 
 
