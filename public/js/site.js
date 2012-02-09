@@ -22,7 +22,7 @@ var placeRandom = function(data) {
 		}
 		
 		var posx = 200; // Math.random()*(wiw-400)
-		var posy = 120; //Math.random()*(wih-400)
+		var posy = 80; //Math.random()*(wih-400)
 		
 		var cssObj = { 'left' : posx,
 			'top' : posy,
