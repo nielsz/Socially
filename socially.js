@@ -11,7 +11,6 @@ var embedly = require('embedly')
 
 
 var twitter = require('ntwitter');
-var twittext = require('twitter-text')
 
 var twit = new twitter(config.TWITTER_CONFIG);
 
@@ -36,7 +35,7 @@ twit.stream('statuses/filter', {'track':searchterm}, function(stream) {
 
       io.sockets.emit('message', { 'message_type': 'twitter',
                                    'user': data.user.name,
-                                   'text': twittext.autoLink(twittext.htmlEscape(data.text)),
+                                   'text': data.text,
                                    'created_at': data.created_at  } );
 
       var urls = data.entities.urls.map(function(x){return x.url});
@@ -59,8 +58,23 @@ twit.stream('statuses/filter', {'track':searchterm}, function(stream) {
         }).start();
       }
   });
+  stream.on('destroy', function (destroy) {
+    console.log(destroy);
+  });
   stream.on('error', function (error) {
     console.log(error);
+  });
+  stream.on('end', function (response) {
+    console.log(response);
+  });
+  stream.on('limit', function (limit) {
+    console.log(limit);
+  });
+  stream.on('delete', function (del) {
+    console.log(del);
+  });
+  stream.on('scrub-geo', function (scrubgeo) {
+    console.log(scrubgeo);
   });
 });
 
@@ -78,7 +92,7 @@ io.sockets.on('connection', function(socket) {
     results.map(function(tweet) {
       socket.emit('message', { 'message_type': 'twitter',
                                'user': tweet.from_user,
-                               'text': twittext.autoLink(twittext.htmlEscape(tweet.text)),
+                               'text': tweet.text,
                                'created_at': tweet.created_at } );
     });
   });
