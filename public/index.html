@@ -100,7 +100,8 @@
     <script>
     var socket = io.connect();
     socket.on('tweet', function(data){
-      $('<div class="well"><h4>' + data.user + '</h4><p>' + data.text + '</p>' + Date(data.created_at) + '</div>').prependTo('#messages');
+      var created_at = new Date(Date.parse(data.created_at));
+      $('<div class="well"><h4>' + data.user + '</h4><p>' + data.text + '</p>' + created_at.toLocaleDateString() + ' ' + created_at.toLocaleTimeString()  + '</div>').prependTo('#messages');
     });
     socket.on('media', function(data){
     	placeRandom(data);
