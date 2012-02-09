@@ -98,19 +98,11 @@
     <script src="../js/jquery.min.js"></script>
     <script src="../js/bootstrap.min.js"></script>
     <script src="../js/jquery.prettydate.js"></script>
-    <script src="../js/twitter-text.js"></script>
     <script>
-    setInterval(function(){
-      $('#messages .date').prettyDate( { isUTC: true, interval: null } );
-    }, 1000);
+    setInterval(function(){ $('#messages .date').prettyDate( { isUTC: true, interval: null } ); }, 10000);
 
     var socket = io.connect();
     socket.on('message', function(data){
-      switch(data.message_type) {
-        case 'twitter':
-          data.text = twttr.txt.autoLink(twttr.txt.htmlEscape(data.text));
-          break;
-      }
       var created_at = new Date(Date.parse(data.created_at));
       $('<div class="well"><h4>' + data.user + '</h4><p>' + data.text + '</p><span class="date" title="' + created_at.toISOString() + '">' + created_at.toLocaleDateString() + ' ' + created_at.toLocaleTimeString()  + '</span></div>').prependTo('#messages');
     });
