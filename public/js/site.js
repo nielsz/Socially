@@ -21,8 +21,11 @@ var placeRandom = function(data) {
 			var wih = window.innerHeight;	
 		}
 		
-		var cssObj = { 'left' : Math.random()*(wiw-400),
-			'top' : Math.random()*(wih-400),
+		var posx = 200; // Math.random()*(wiw-400)
+		var posy = 120; //Math.random()*(wih-400)
+		
+		var cssObj = { 'left' : posx,
+			'top' : posy,
 			'-webkit-transform' : 'rotate('+ rotDegrees +'deg)',  // safari only
 			'transform' : 'rotate('+ rotDegrees +'deg)' }; // added in case CSS3 is standard
 

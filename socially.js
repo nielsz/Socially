@@ -15,9 +15,20 @@ var twittext = require('twitter-text')
 
 var twit = new twitter(config.TWITTER_CONFIG);
 
+var ignoreRealRetweets = true;
+var ignoreLameRetweets = true;
+
+
 twit.stream('statuses/filter', {'track':searchterm}, function(stream) {
   stream.on('data', function (data) {
-    if(data.retweeted_status == null) {
+
+      if(data.retweeted_status != null && ignoreRealRetweets == true) {
+        return;
+      }
+
+      if(data.text.substring(0,4)=="RT @" && ignoreLameRetweets == true) {
+      	return;
+      }
 
       io.sockets.emit('tweet', { 'user': data.user.name, 'text': twittext.autoLink(twittext.htmlEscape(data.text)), 'created_at': data.created_at  } );
 
@@ -39,8 +50,6 @@ twit.stream('statuses/filter', {'track':searchterm}, function(stream) {
           console.error(e);
         }).start();
       }
-
-    }
   });
 });
 
