@@ -18,42 +18,47 @@ var twit = new twitter(config.TWITTER_CONFIG);
 var ignoreRealRetweets = true;
 var ignoreLameRetweets = true;
 
+var express = require("express");
 
-twit.stream('statuses/filter', {'track':searchterm}, function(stream) {
-  stream.on('data', function (data) {
+var app = express.createServer()
+  ,io = require('socket.io').listen(app);
 
-      if(data.retweeted_status != null && ignoreRealRetweets == true) {
+twit.stream('statuses/filter', {'track':searchterm}, handletwitstream);
+
+function handletwitstream(stream) {
+  stream.on('data', function (tweet) {
+
+      if(tweet.retweeted_status != null && ignoreRealRetweets == true) {
         return;
       }
 
-      if(ignoreLameRetweets == true && (data.text.substring(0,4)=="RT @"
-                                     || data.text.substring(0,5)=="RT: @"
-                                     || data.text.substring(0,2)=="\"@" )) {
+      if(ignoreLameRetweets == true && (tweet.text.substring(0,4)=="RT @"
+                                     || tweet.text.substring(0,5)=="RT: @"
+                                     || tweet.text.substring(0,2)=="\"@" )) {
 
-      	console.log("Ignoring " + data.text);
-      	return;
+        console.log("Ignoring " + tweet.text);
+        return;
       }
 
       io.sockets.emit('message', { 'message_type': 'twitter',
-                                   'user': data.user.name,
-                                   'text': twittext.autoLink(twittext.htmlEscape(data.text)),
-                                   'created_at': data.created_at  } );
+                                   'user': tweet.user.name,
+                                   'text': twittext.autoLink(twittext.htmlEscape(tweet.text)),
+                                   'created_at': tweet.created_at  } );
 
-      var urls = data.entities.urls.map(function(x){return x.url});
-      
-      if (urls.length > 0) {
+      var urls = tweet.entities.urls.map(function(url){return url.url});
+      if (false && urls.length > 0) {
         api.oembed(
           { urls: urls
           , wmode: 'transparent'
           , method: 'after'
           }
         ).on('complete', function(objs) {
-          for (var i in objs) {
-            if(objs[i].thumbnail_url != null) {
-              io.sockets.emit('media', { 'title': objs[i].title,
-                                         'thumbnail_url': objs[i].thumbnail_url } );
+          objs.forEach(function(obj){
+            if(obj.thumbnail_url != null) {
+              io.sockets.emit('media', { 'title': obj.title,
+                                         'thumbnail_url': obj.thumbnail_url } );
             }
-          }
+          });
         }).on('error', function(e) {
           console.error(e);
         }).start();
@@ -62,26 +67,20 @@ twit.stream('statuses/filter', {'track':searchterm}, function(stream) {
   stream.on('error', function (error) {
     console.log(error);
   });
-});
-
+}
 
 //var foursquare = require("node-foursquare")(config.FOURSQUARE_CONFIG);
-
-var express = require("express");
-
-var app = express.createServer()
-  ,io = require('socket.io').listen(app);
 
 io.sockets.on('connection', function(socket) {
   twit.search(searchterm, {'include_entities':true}, function(err, data) {
     var results = data.results.reverse();
-    results.map(function(tweet) {
+    results.forEach(function(tweet) {
       socket.emit('message', { 'message_type': 'twitter',
                                'user': tweet.from_user,
                                'text': twittext.autoLink(twittext.htmlEscape(tweet.text)),
                                'created_at': tweet.created_at } );
 
-      var urls = twittext.extractUrls(tweet.text);
+      var urls = tweet.entities.urls.map(function(url){return url.url});
 
       if (urls.length > 0) {
         api.oembed(
@@ -100,8 +99,10 @@ io.sockets.on('connection', function(socket) {
           console.error(e);
         }).start();
       }
-
     });
+  });
+  socket.on('searchterm', function(searchterm) {
+    twit.stream('statuses/filter', {'track':searchterm}, handletwitstream);
   });
 });
 

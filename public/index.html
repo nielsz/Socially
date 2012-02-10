@@ -53,7 +53,7 @@
       </div>
     </div>
 
-    <div class="container">
+    <div class="container-fluid">
       <div id="alert_location" class="alert alert-info">
         <a class="close" data-dismiss="alert">&times;</a>
         <strong>Where's all the fun at?</strong> If your browser supports it, we'd like you to share your physical location with us. Just so we can get social with you.
@@ -83,7 +83,11 @@
               <a href="#" class="btn" data-dismiss="modal">Close</a>
             </div>
           </div>
-      <div class="row">
+      <form class="well form-search">
+        <input type="text" class="input-medium search-query">
+        <button type="submit" class="btn">track</button>
+      </form>
+      <div class="row-fluid">
         <div id="messages" class="span3">
         </div>
         <div class="span9" id="media">
@@ -99,15 +103,20 @@
     <script src="../js/bootstrap.min.js"></script>
     <script src="../js/jquery.prettydate.js"></script>
     <script>
-    setInterval(function(){ $('#messages .date').prettyDate( { isUTC: true, interval: null } ); }, 1000);
+    setInterval(function(){ $('#messages .date').prettyDate( { isUTC: true, interval: null } ); }, 10000);
 
     var socket = io.connect();
     socket.on('message', function(data){
       var created_at = new Date(Date.parse(data.created_at));
-      $('<div class="well"><h4>' + data.user + '</h4><p>' + data.text + '</p><span class="date" title="' + created_at.toISOString() + '">' + created_at.toLocaleDateString() + ' ' + created_at.toLocaleTimeString()  + '</span></div>').prependTo('#messages');
+      $('<div class="well"><h4>' + data.user + '</h4><p>' + data.text + '</p><span class="date" title="' + created_at.toISOString() + '">' + created_at.toLocaleDateString() + ' ' + created_at.toLocaleTimeString()  + '</span></div>').hide().prependTo('#messages').fadeIn().find('.date').prettyDate( { isUTC: true, interval: null } );
     });
     socket.on('media', function(data){
     	placeRandom(data);
+    });
+    $('form.form-search').submit( function(e){
+      var searchterm = $('.form-search input.search-query').val();
+      socket.emit('searchterm', searchterm);
+      return false;
     });
     navigator.geolocation.getCurrentPosition(successCallback,
                                              errorCallback,
