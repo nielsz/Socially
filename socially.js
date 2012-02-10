@@ -46,7 +46,7 @@ function handletwitstream(stream) {
                                    'created_at': tweet.created_at  } );
 
       var urls = tweet.entities.urls.map(function(url){return url.url});
-      if (false && urls.length > 0) {
+      if (urls.length > 0) {
         api.oembed(
           { urls: urls
           , wmode: 'transparent'
