@@ -1,14 +1,12 @@
 var config = require('./config.js');
 
 var searchterm = process.argv[2];
-console.log(searchterm);
 
 var embedly = require('embedly')
   , require_either = embedly.utils.require_either
   , util = require_either('util', 'utils')
   , Api = embedly.Api
   , api = new Api({user_agent: 'Mozilla/5.0 (compatible; myapp/1.0; u@my.com)', key: config.EMBEDLY_KEY});
-
 
 var twitter = require('ntwitter');
 var twittext = require('twitter-text')
@@ -32,6 +30,16 @@ function handletwitstream(stream) {
   });
 }
 
+io.sockets.on('connection', function(socket) {
+  twit.search(searchterm, {'include_entities':true}, function(err, data) {
+    var results = data.results.reverse();
+    results.forEach(processTweet);
+  });
+  socket.on('searchterm', function(searchterm) {
+    twit.stream('statuses/filter', {'track':searchterm}, handletwitstream);
+  });
+});
+
 function processTweet(tweet){
   if(tweet.retweeted_status != null && ignoreRealRetweets == true) {
     return;
@@ -46,7 +54,7 @@ function processTweet(tweet){
   }
 
   io.sockets.emit('message', { 'message_type': 'twitter',
-                               'user': tweet.user ? tweet.user.name : tweet.from_user,
+                               'user': tweet.user ? tweet.user.name : tweet.from_user_name,
                                'text': twittext.autoLink(twittext.htmlEscape(tweet.text)),
                                'created_at': tweet.created_at  } );
 
@@ -71,16 +79,6 @@ function processTweet(tweet){
 }
 
 //var foursquare = require("node-foursquare")(config.FOURSQUARE_CONFIG);
-
-io.sockets.on('connection', function(socket) {
-  twit.search(searchterm, {'include_entities':true}, function(err, data) {
-    var results = data.results.reverse();
-    results.forEach(handletweet);
-  });
-  socket.on('searchterm', function(searchterm) {
-    twit.stream('statuses/filter', {'track':searchterm}, handletwitstream);
-  });
-});
 
 io.configure(function(){
   io.set('log level', 1);                    // reduce logging
