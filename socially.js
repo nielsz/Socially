@@ -26,47 +26,48 @@ var app = express.createServer()
 twit.stream('statuses/filter', {'track':searchterm}, handletwitstream);
 
 function handletwitstream(stream) {
-  stream.on('data', function (tweet) {
-
-      if(tweet.retweeted_status != null && ignoreRealRetweets == true) {
-        return;
-      }
-
-      if(ignoreLameRetweets == true && (tweet.text.substring(0,4)=="RT @"
-                                     || tweet.text.substring(0,5)=="RT: @"
-                                     || tweet.text.substring(0,2)=="\"@" )) {
-
-        console.log("Ignoring " + tweet.text);
-        return;
-      }
-
-      io.sockets.emit('message', { 'message_type': 'twitter',
-                                   'user': tweet.user.name,
-                                   'text': twittext.autoLink(twittext.htmlEscape(tweet.text)),
-                                   'created_at': tweet.created_at  } );
-
-      var urls = tweet.entities.urls.map(function(url){return url.url});
-      if (urls.length > 0) {
-        api.oembed(
-          { urls: urls
-          , wmode: 'transparent'
-          , method: 'after'
-          }
-        ).on('complete', function(objs) {
-          objs.forEach(function(obj){
-            if(obj.thumbnail_url != null) {
-              io.sockets.emit('media', { 'title': obj.title,
-                                         'thumbnail_url': obj.thumbnail_url } );
-            }
-          });
-        }).on('error', function(e) {
-          console.error(e);
-        }).start();
-      }
-  });
+  stream.on('data', processTweet);
   stream.on('error', function (error) {
     console.log(error);
   });
+}
+
+function processTweet(tweet){
+  if(tweet.retweeted_status != null && ignoreRealRetweets == true) {
+    return;
+  }
+
+  if(ignoreLameRetweets == true && (tweet.text.substring(0,4)=="RT @"
+                                 || tweet.text.substring(0,5)=="RT: @"
+                                 || tweet.text.substring(0,2)=="\"@" )) {
+
+    console.log("Ignoring " + tweet.text);
+    return;
+  }
+
+  io.sockets.emit('message', { 'message_type': 'twitter',
+                               'user': tweet.user ? tweet.user.name : tweet.from_user,
+                               'text': twittext.autoLink(twittext.htmlEscape(tweet.text)),
+                               'created_at': tweet.created_at  } );
+
+  var urls = tweet.entities.urls.map(function(url){return url.url});
+  if (urls.length > 0) {
+    api.oembed(
+      { urls: urls
+      , wmode: 'transparent'
+      , method: 'after'
+      }
+    ).on('complete', function(objs) {
+      objs.forEach(function(obj){
+        if(obj.thumbnail_url != null) {
+          io.sockets.emit('media', { 'title': obj.title,
+                                     'thumbnail_url': obj.thumbnail_url } );
+        }
+      });
+    }).on('error', function(e) {
+      console.error(e);
+    }).start();
+  }
 }
 
 //var foursquare = require("node-foursquare")(config.FOURSQUARE_CONFIG);
@@ -74,32 +75,7 @@ function handletwitstream(stream) {
 io.sockets.on('connection', function(socket) {
   twit.search(searchterm, {'include_entities':true}, function(err, data) {
     var results = data.results.reverse();
-    results.forEach(function(tweet) {
-      socket.emit('message', { 'message_type': 'twitter',
-                               'user': tweet.from_user,
-                               'text': twittext.autoLink(twittext.htmlEscape(tweet.text)),
-                               'created_at': tweet.created_at } );
-
-      var urls = tweet.entities.urls.map(function(url){return url.url});
-
-      if (urls.length > 0) {
-        api.oembed(
-          { urls: urls
-          , wmode: 'transparent'
-          , method: 'after'
-          }
-        ).on('complete', function(objs) {
-          for (var i in objs) {
-            if(objs[i].thumbnail_url != null) {
-              io.sockets.emit('media', { 'title': objs[i].title,
-                                         'thumbnail_url': objs[i].thumbnail_url } );
-            }
-          }
-        }).on('error', function(e) {
-          console.error(e);
-        }).start();
-      }
-    });
+    results.forEach(handletweet);
   });
   socket.on('searchterm', function(searchterm) {
     twit.stream('statuses/filter', {'track':searchterm}, handletwitstream);
