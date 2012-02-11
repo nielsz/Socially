@@ -14,8 +14,6 @@
     <!-- Le styles -->
     <link href="../css/bootstrap.min.css" rel="stylesheet">
     <link href="../css/site.css" rel="stylesheet">
-    <script type="text/javascript" src="../js/jqueryrotate.js"></script>
-    <script type="text/javascript" src="../js/site.js"></script>    
     
     <style>
       body {
@@ -98,38 +96,11 @@
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="../socket.io/socket.io.js"></script>
-    <script src="../js/jquery.min.js"></script>
-    <script src="../js/bootstrap.min.js"></script>
-    <script src="../js/jquery.prettydate.js"></script>
-    <script>
-    setInterval(function(){ $('#messages .date').prettyDate( { isUTC: true, interval: null } ); }, 10000);
-
-    var socket = io.connect();
-    socket.on('message', function(data){
-      var created_at = new Date(Date.parse(data.created_at));
-      $('<div class="well"><h4>' + data.user + '</h4><p>' + data.text + '</p><span class="date" title="' + created_at.toISOString() + '">' + created_at.toLocaleDateString() + ' ' + created_at.toLocaleTimeString()  + '</span></div>').hide().prependTo('#messages').fadeIn().find('.date').prettyDate( { isUTC: true, interval: null } );
-    });
-    socket.on('media', function(data){
-    	placeRandom(data);
-    });
-    $('form.form-search').submit( function(e){
-      var searchterm = $('.form-search input.search-query').val();
-      socket.emit('searchterm', searchterm);
-      return false;
-    });
-    navigator.geolocation.getCurrentPosition(successCallback,
-                                             errorCallback,
-                                             {maximumAge:600000});
-
-    function successCallback(position) {
-      $('#alert_location').alert('close');
-    }
-
-    function errorCallback(error) {
-      console.log(error);
-      // Update a div element with error.message.
-    }
-    </script>
+    <script type="text/javascript" src="../socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../js/jquery.prettydate.js"></script>
+    <script type="text/javascript" src="../js/jqueryrotate.js"></script>
+    <script type="text/javascript" src="../js/site.js"></script>
   </body>
 </html>
