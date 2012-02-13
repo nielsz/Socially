@@ -4,7 +4,7 @@ var socket = io.connect();
 
 socket.on('message', function(data){
   var created_at = new Date(Date.parse(data.created_at));
-  var message = $('<div class="message"><strong>' + data.user + '</strong><span class="date" title="' + created_at.toISOString() + '">' + created_at.toLocaleDateString() + ' ' + created_at.toLocaleTimeString()  + '</span><div>' + data.text + '</div></div>');
+  var message = $('<div class="message"><strong>' + data.user_name + '</strong> <span class="screen-name"><s>@</s>' + data.screen_name + '</span><span class="date" title="' + created_at.toISOString() + '">' + created_at.toLocaleDateString() + ' ' + created_at.toLocaleTimeString()  + '</span><div>' + data.text + '</div></div>');
   message.find('span.date').prettyDate( { isUTC: true, interval: null } );
   message.hide().prependTo('#messages').fadeIn();
 });

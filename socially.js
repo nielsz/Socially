@@ -54,7 +54,8 @@ function processTweet(tweet){
   }
 
   io.sockets.emit('message', { 'message_type': 'twitter',
-                               'user': tweet.user ? tweet.user.name : tweet.from_user_name,
+                               'screen_name': tweet.user ? tweet.user.screen_name : tweet.from_user,
+                               'user_name': tweet.user ? tweet.user.name : tweet.from_user_name,
                                'text': twittext.autoLink(twittext.htmlEscape(tweet.text)),
                                'created_at': tweet.created_at  } );
 
