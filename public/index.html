@@ -43,8 +43,10 @@
           <div class="nav-collapse">
             <ul class="nav">
               <li class="active"><a href="#">Home</a></li>
-              <li><a href="#about">About</a></li>
-              <li><a href="#contact">Contact</a></li>
+              <li><a data-toggle="modal" href="#connecttwitter">Twitter</a></li>              
+              <li><a data-toggle="modal" href="#connectfoursquare">Foursquare</a></li>
+              <li><a data-toggle="modal" href="#connectflickr">Flickr</a></li>    
+              <li><a data-toggle="modal" href="#connectfacebook">Facebook</a></li>                            
             </ul>
           </div><!--/.nav-collapse -->
         </div>
@@ -61,6 +63,29 @@
         <a class="close" data-dismiss="alert">&times;</a>
         <strong>Heads up!</strong> You have not told us about your social networks yet. If you'd like to see some magic happening, connect your <a class="btn" data-toggle="modal" href="#connectfoursquare">Twitter</a>, <a class="btn" data-toggle="modal" href="#connectfoursquare">Facebook</a> or <a class="btn" data-toggle="modal" href="#connectfoursquare">FourSquare</a> accounts with Socially!
       </div>
+      
+          <div id="connecttwitter" class="modal hide fade" style="display: none;">
+            <div class="modal-header">
+              <a class="close" data-dismiss="modal">&times;</a>
+              <h3>Connect your Twitter account with Socially</h3>
+            </div>
+            <div class="modal-body network-disconnected">
+              <h4>Network disconnected</h4>
+              <p><a href="http://twitter.com">Connect to twitter</a></p>
+
+              <h4>Twitter searchterm(s)</h4>
+              <p><input type="text" name="twittersearch" id="twittersearch"></p>
+
+              <h4>Tips</h4>
+              <p>You can use #hashtags, or @accounts, or even both (seperated by a comma)</p>
+            </div>
+            <div class="modal-footer">
+              <a href="#" class="btn btn-primary">Save changes</a>
+              <a href="#" class="btn" data-dismiss="modal">Close</a>
+            </div>
+          </div>      
+      
+      
           <div id="connectfoursquare" class="modal hide fade" style="display: none; ">
             <div class="modal-header">
               <a class="close" data-dismiss="modal">&times;</a>
