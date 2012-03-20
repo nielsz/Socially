@@ -1,12 +1,43 @@
 setInterval(function(){ $('#messages .date').prettyDate( { isUTC: true, interval: null } ); }, 10000);
 
+var messages=new Array();
+var maxActiveMessageCount = 5;
+
+
+function addMessage(data)
+{
+	var randomnumber=Math.floor(Math.random()*1000)+1;
+	data.message_id = randomnumber;
+	var created_at = new Date(Date.parse(data.created_at));
+	var message = $('<div class="message" id="message'+data.message_id+'"><strong>' + data.user_name + '</strong> <span class="screen-name"><s>@</s>' + data.screen_name + '</span><span class="date" title="' + created_at.toISOString() + '">' + created_at.toLocaleDateString() + ' ' + created_at.toLocaleTimeString()  + '</span><div>' + data.text + '</div></div>');
+	message.find('span.date').prettyDate( { isUTC: true, interval: null } );
+ 	message.hide().prependTo('#messages').fadeIn();	
+  
+
+  
+	messages.unshift(data);
+	if(messages.length > maxActiveMessageCount)
+	{
+
+		var lastMessage = messages.pop();
+		removeMessage(lastMessage);
+	}
+}
+
+function removeMessage(data)
+{
+	$('#message'+data.message_id).slideUp("normal", function() { $(this).remove(); } );
+	
+	
+}
+
+
+
 var socket = io.connect();
 
 socket.on('message', function(data){
-  var created_at = new Date(Date.parse(data.created_at));
-  var message = $('<div class="message"><strong>' + data.user_name + '</strong> <span class="screen-name"><s>@</s>' + data.screen_name + '</span><span class="date" title="' + created_at.toISOString() + '">' + created_at.toLocaleDateString() + ' ' + created_at.toLocaleTimeString()  + '</span><div>' + data.text + '</div></div>');
-  message.find('span.date').prettyDate( { isUTC: true, interval: null } );
-  message.hide().prependTo('#messages').fadeIn();
+	addMessage(data);
+
 });
 
 socket.on('media', function(data){
@@ -30,6 +61,11 @@ function successCallback(position) {
 function errorCallback(error) {
   console.log(error);
 }
+
+
+
+
+
 
 function randomXToY(minVal,maxVal,floatVal) {
         var randVal = minVal+(Math.random()*(maxVal-minVal));
