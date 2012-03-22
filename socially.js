@@ -59,24 +59,28 @@ function processTweet(tweet){
                                'text': twittext.autoLink(twittext.htmlEscape(tweet.text)),
                                'created_at': tweet.created_at  } );
 
-  var urls = tweet.entities.urls.map(function(url){return url.url});
-  if (urls.length > 0) {
-    api.oembed(
-      { urls: urls
-      , wmode: 'transparent'
-      , method: 'after'
-      }
-    ).on('complete', function(objs) {
-      objs.forEach(function(obj){
-        if(obj.thumbnail_url != null) {
-          io.sockets.emit('media', { 'title': obj.title,
-                                     'thumbnail_url': obj.thumbnail_url } );
-        }
-      });
-    }).on('error', function(e) {
-      console.error(e);
-    }).start();
-  }
+	if(tweet.entities)	
+	{
+		var urls = tweet.entities.urls.map(function(url){return url.url});
+		if (urls.length > 0) {
+	    	api.oembed(
+				{ urls: urls
+				, wmode: 'transparent'
+				, method: 'after'
+			}
+		    ).on('complete', function(objs) {
+		      objs.forEach(function(obj){
+		        if(obj.thumbnail_url != null) {
+		          io.sockets.emit('media', { 'title': obj.title,
+		                                     'thumbnail_url': obj.thumbnail_url } );
+		        }
+		      });
+		    }).on('error', function(e) {
+		      console.error(e);
+		    }).start();
+		}
+	}
+
 }
 
 //var foursquare = require("node-foursquare")(config.FOURSQUARE_CONFIG);

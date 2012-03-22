@@ -1,25 +1,19 @@
 setInterval(function(){ $('#messages .date').prettyDate( { isUTC: true, interval: null } ); }, 10000);
 
-var messages=new Array();
-var maxActiveMessageCount = 5;
-
+var sortedMessages=new Array();
+var displayMessages=new Array();
 
 function addMessage(data)
 {
 	var randomnumber=Math.floor(Math.random()*1000)+1;
 	data.message_id = randomnumber;
-	var created_at = new Date(Date.parse(data.created_at));
-	var message = $('<div class="message" id="message'+data.message_id+'"><strong>' + data.user_name + '</strong> <span class="screen-name"><s>@</s>' + data.screen_name + '</span><span class="date" title="' + created_at.toISOString() + '">' + created_at.toLocaleDateString() + ' ' + created_at.toLocaleTimeString()  + '</span><div>' + data.text + '</div></div>');
-	message.find('span.date').prettyDate( { isUTC: true, interval: null } );
- 	message.hide().prependTo('#messages').fadeIn();	
-  
-
-  
-	messages.unshift(data);
-	if(messages.length > maxActiveMessageCount)
+	
+	sortedMessages.unshift(data);
+	displayMessage(data);
+	if(sortedMessages.length > 10)
 	{
 
-		var lastMessage = messages.pop();
+		var lastMessage = sortedMessages.pop();
 		removeMessage(lastMessage);
 	}
 }
@@ -27,7 +21,21 @@ function addMessage(data)
 function removeMessage(data)
 {
 	$('#message'+data.message_id).slideUp("normal", function() { $(this).remove(); } );
-	
+}
+
+function displayMessage(data)
+{
+
+	var created_at = new Date(Date.parse(data.created_at));
+	var message = $('<div class="message" id="message'+data.message_id+'"><strong>' + data.user_name + '</strong> <span class="screen-name"><s>@</s>' + data.screen_name + '</span><span class="date" title="' + created_at.toISOString() + '">' + created_at.toLocaleDateString() + ' ' + created_at.toLocaleTimeString()  + '</span><div>' + data.text + '</div></div>');
+	message.find('span.date').prettyDate( { isUTC: true, interval: null } );
+ 	message.prependTo('#messages').animate({		
+    opacity: 0, // Will fade the object in
+    fontSize: "14px", // Will animate the font size too
+	'top' : "+=1000px",   
+    
+}, 25000); // 1000 milliseconds	
+
 	
 }
 
@@ -93,7 +101,7 @@ placeRandom = function(data) {
         //var posx = 200; // Math.random()*(wiw-400)
         //var posy = 80; //Math.random()*(wih-400)
         
-        var posx =Math.random()*(wiw-700);
+        var posx =Math.random()*(wiw-700)+200;
         var posy =Math.random()*(wih-500);
         
         
